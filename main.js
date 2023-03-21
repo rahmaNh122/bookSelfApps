@@ -11,7 +11,7 @@ function generateBookObject(id, title, author, year, isCompleted) {
   return {
     id,
     title,
-    author,
+    author, // Tambahkan properti author ini
     year,
     isCompleted
   }
@@ -63,6 +63,7 @@ function loadDataFromStorage() {
 
   document.dispatchEvent(new Event(RENDER_EVENT));
 }
+
 
 
 function makeBook(bookObject) {
@@ -146,6 +147,8 @@ function addBook() {
   saveData();
 }
 
+
+
 function addBookToCompleted(bookId /* HTMLELement */) {
   const bookTarget = findBook(bookId);
 
@@ -176,7 +179,38 @@ function undoBookFromCompleted(bookId /* HTMLELement */) {
   saveData();
 }
 
+function searchBooks(searchTerm) {
+  const filteredBooks = books.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  return filteredBooks;
+}
+
+function renderSearchResults(searchResults) {
+  const uncompletedBookList = document.getElementById('incompleteBookshelfList');
+  const completedBookList = document.getElementById('completeBookshelfList');
+
+  uncompletedBookList.innerHTML = '';
+  completedBookList.innerHTML = '';
+
+  for (const bookItem of searchResults) {
+    const bookElement = makeBook(bookItem);
+    if (bookItem.isCompleted) {
+      completedBookList.append(bookElement);
+    } else {
+      uncompletedBookList.append(bookElement);
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+
+   const searchForm = document.getElementById('searchBook');
+  searchForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const searchTerm = document.getElementById('searchBookTitle').value;
+    const searchResults = searchBooks(searchTerm);
+    renderSearchResults(searchResults);
+  });
 
   const submitForm /* HTMLFormElement */ = document.getElementById('inputBook');
 
